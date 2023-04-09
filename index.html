@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pass_enc</title>
+  </head>
+  <body>
+    <p>encrypted <input id="encrypted" type="password" value="U2FsdGVkX1/Bz/NYllUQbG7qcjwY5IWYq2+hYrbT5xg4Af3RQNh6zzLA8DBCH8Gd7+ISxk1tXE1tD1UEFFc+ZUFrnOxoiHcJ7+yqbZsQlyXbzjd1QnrpQkCBdpuuwp25dRFcFmFDGBjL/Py/QfqTbljHCMv2W+r45+RzcJgdqQLptiWzIy9ZEjbPa3KAaiHFew0grb2yu2DexP/YkRbcu9JL99p95s5LCWuwo4AP0dJZy/KeuBGOghOvu4qt1ynYnDMY6nE1ZFduMaWe3XmQgU019rhkQ7wbHNa3j5b054BiFdJd/wd69w3fvOwsWWVeU/DCxUShQNCBIFbWURHLDm4Glo3n/dK6EwvyyfCl+qVee3+Sww+8wMaNvEh8uZgFw3vWLWgRQjPwbK2wRKNeWd+F63nmpUXWNpNVxHTJsQH2N//AucBagtmaBig1jsIevkHQyZoDcIgn8Qw3iRW/yA=="></p>
+    <p>password <input id="password" type="password" value="pass"></p>
+    <p>iterations <input id="iterations" type="number" value="99999"></p>
+    <button id="decrypt" onclick="decrypt()">decrypt</button>
+    <div id="qr"></div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
