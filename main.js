@@ -68,27 +68,41 @@ window.decrypt = async () => {
     .map((elemId) => [elemId, document.getElementById(elemId).value])
   );
   const decrypted = openssl.decrypt(formValue["encrypted"], formValue["password"], formValue["iterations"]);
-  const accounts = JSON.parse(decrypted);
-  const accountsDom = await Promise.all(accounts.map(async (account) => {
+  let accounts = JSON.parse(decrypted);
+  if (!Array.isArray(accounts)) {
+    accounts = [accounts];
+  }
+
+  const qrElem = document.getElementById("qr");
+  while (qrElem.firstChild) {
+    qrElem.removeChild(qrElem.firstChild);
+  }
+
+  const accountsDom = accounts.map((account) => {
     const container = document.createElement("div");
 
-    const title = document.createElement("p");
-    title.innerHTML = account["service"];
+    const qr = document.createElement("div");
+    qr.style = "width: 256px; height: 256px; background: #eee";
+    container.appendChild(qr);
+
+    document.getElementById("qr").appendChild(container);
+    const title = document.createElement("div");
+    title.innerHTML = `<h1>${account["service"]}</h1><pre>echo "\${base64}" | openssl aes-256-cbc -d -pbkdf2 -iter ${formValue["iterations"]} -base64 -A -k "\${password}"</pre>`;
     container.appendChild(title);
 
-    const svg = await QRCode.toString(JSON.stringify(account), {
-      errorCorrectionLevel: "M",
+    return [account, qr];
+  });
+  const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
+  for (let [account, qr] of accountsDom) {
+    const enc = openssl.encrypt(JSON.stringify(account), formValue["password"], formValue["iterations"]);
+    const svg = await QRCode.toString(enc, {
+      errorCorrectionLevel: "L",
       type: "svg",
       margin: 1
     });
-    const qr = document.createElement("div");
-    qr.style = "width: 256px; height: 256px";
     qr.innerHTML = svg;
-    container.appendChild(qr);
 
-    return container;
-  }));
-  accountsDom.forEach((accountDom) => {
-    document.getElementById("qr").appendChild(accountDom);
-  });
+    // 画面を更新するためのスリープ
+    await sleep(0);
+  }
 };
