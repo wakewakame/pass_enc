@@ -14,11 +14,24 @@
     </style>
   </head>
   <body>
-    <p>encrypted <input id="encrypted" type="password" value="U2FsdGVkX18SVuiyePC5fxY5f6b+Wight/nXfCdGAVon6z+v8LhjmqqIgTnZhzbHh+bImmegFcGa4LAxEZnqgrcgUTi4j01p4jaAJYNovcsDVNKGvlXF16xnBvhrkQlgUL+bfLyK9k9jDV/EgUNkEhXzfru77cngKrD21LOCZS/ygLV9izVt7VoTH2pYkXGqfA+KN1kEPFCa23GCzjHW9bmhQQz0isGpMSknJ+eNkjJ7Mk3+nEjYR5OM2P48OUr3jRnYk21vkhfiP2XIgH17Z7ZJB/JjoKmSGCcH979+Z+mADlD5LXROmqadBW4pkaFNcT8yttszlrDfOqTEumeyXcZmDPAOcpZ0vPIgSJgcbCn8UidcyDiBW7afjWcXaaaPHS7LOVGrzmj584hCdMmTGVvBcuHurLuNSraKcKgRv+GK/BVb8CaUzIC8cfTh92gGmPft7d+BMNLuHEChM1iLdw=="></p>
-    <p>password <input id="password" type="password" value="pass"></p>
-    <p>iterations <input id="iterations" type="number" value="10000"></p>
-    <button id="decrypt" onclick="decrypt()">decrypt</button>
-    <div id="qr"></div>
+    <div>
+      <p>encrypted <input id="encrypted" type="password" value="U2FsdGVkX18SVuiyePC5fxY5f6b+Wight/nXfCdGAVon6z+v8LhjmqqIgTnZhzbHh+bImmegFcGa4LAxEZnqgrcgUTi4j01p4jaAJYNovcsDVNKGvlXF16xnBvhrkQlgUL+bfLyK9k9jDV/EgUNkEhXzfru77cngKrD21LOCZS/ygLV9izVt7VoTH2pYkXGqfA+KN1kEPFCa23GCzjHW9bmhQQz0isGpMSknJ+eNkjJ7Mk3+nEjYR5OM2P48OUr3jRnYk21vkhfiP2XIgH17Z7ZJB/JjoKmSGCcH979+Z+mADlD5LXROmqadBW4pkaFNcT8yttszlrDfOqTEumeyXcZmDPAOcpZ0vPIgSJgcbCn8UidcyDiBW7afjWcXaaaPHS7LOVGrzmj584hCdMmTGVvBcuHurLuNSraKcKgRv+GK/BVb8CaUzIC8cfTh92gGmPft7d+BMNLuHEChM1iLdw=="></p>
+      <p>password <input id="password" type="password" value="pass"></p>
+      <p>iterations <input id="iterations" type="number" value="10000"></p>
+      <button id="decrypt" onclick="decrypt()">decrypt</button>
+    </div>
+    <template id="account-template">
+      <div class="account" data-account="">
+        <div class="qr" style="width: 256px; height: 256px; background: #eee">
+        </div>
+        <div>
+          <p class="service"></p>
+          <p class="command"></p>
+        </div>
+      </div>
+    </template>
+    <div id="accounts">
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>

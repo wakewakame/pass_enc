@@ -2,6 +2,7 @@ import CryptoJS from "crypto-js";
 import QRCode from "qrcode";
 
 const openssl = {
+  // 暗号化
   encrypt: (plaintext, password, iter) => {
     // 以下のコマンドと同様の結果を得る
     //   echo "${plaintext}" | openssl aes-256-cbc -e -pbkdf2 -iter ${iter} -base64 -A -k "${password}"
@@ -32,6 +33,8 @@ const openssl = {
     const encrypted = encryptedWA.toString(CryptoJS.enc.Base64);
     return encrypted;
   },
+
+  // 復号化
   decrypt: (encrypted, password, iter) => {
     // 以下のコマンドと同様の結果を得る
     //   echo "${encrypted}" | openssl aes-256-cbc -d -pbkdf2 -iter ${iter} -base64 -A -k "${password}"
@@ -63,46 +66,42 @@ const openssl = {
   }
 };
 
+const sleep = (msec) => new Promise((resolve) => setTimeout(resolve, msec));
+
 window.decrypt = async () => {
+  // 入力された暗号文からアカウント一覧を復元
   const formValue = Object.fromEntries(["encrypted", "password", "iterations"]
     .map((elemId) => [elemId, document.getElementById(elemId).value])
   );
   const decrypted = openssl.decrypt(formValue["encrypted"], formValue["password"], formValue["iterations"]);
-  let accounts = JSON.parse(decrypted);
-  if (!Array.isArray(accounts)) {
-    accounts = [accounts];
+  const accounts_ = JSON.parse(decrypted);
+  const accounts = Array.isArray(accounts_) ? accounts_ : [accounts_];
+
+  // アカウント一覧の表示をリセット
+  const accountsElem = document.getElementById("accounts");
+  while (accountsElem.firstChild) {
+    accountsElem.removeChild(accountsElem.firstChild);
   }
 
-  const qrElem = document.getElementById("qr");
-  while (qrElem.firstChild) {
-    qrElem.removeChild(qrElem.firstChild);
-  }
-
-  const accountsDom = accounts.map((account) => {
-    const container = document.createElement("div");
-
-    const qr = document.createElement("div");
-    qr.style = "width: 256px; height: 256px; background: #eee";
-    container.appendChild(qr);
-
-    document.getElementById("qr").appendChild(container);
-    const title = document.createElement("div");
-    title.innerHTML = `<h1>${account["service"]}</h1><pre>echo "\${base64}" | openssl aes-256-cbc -d -pbkdf2 -iter ${formValue["iterations"]} -base64 -A -k "\${password}"</pre>`;
-    container.appendChild(title);
-
-    return [account, qr];
+  // アカウント一覧の表示
+  const accountTemplateElem = document.getElementById("account-template");;
+  accounts.forEach((account) => {
+    const accountElem = accountTemplateElem.content.cloneNode(true);
+    accountElem.querySelector(".account").dataset.account = JSON.stringify(account);
+    accountElem.querySelector(".service").textContent = account["service"];
+    accountElem.querySelector(".command").textContent =
+      `echo "\${base64}" | openssl aes-256-cbc -d -pbkdf2 -iter ${formValue["iterations"]} -base64 -A -k "\${password}"`
+    accountsElem.appendChild(accountElem);
   });
-  const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
-  for (let [account, qr] of accountsDom) {
-    const enc = openssl.encrypt(JSON.stringify(account), formValue["password"], formValue["iterations"]);
-    const svg = await QRCode.toString(enc, {
-      errorCorrectionLevel: "L",
-      type: "svg",
-      margin: 1
-    });
-    qr.innerHTML = svg;
 
-    // 画面を更新するためのスリープ
+  // アカウント情報の暗号化 & QR Code のレンダリング
+  for (const accountElem of document.querySelectorAll(".account")) {
+    const enc = openssl.encrypt(accountElem.dataset.account, formValue["password"], formValue["iterations"]);
+    const svg = await QRCode.toString(enc, { errorCorrectionLevel: "L", type: "svg", margin: 1 });
+    accountElem.querySelector(".qr").innerHTML = svg;
+
+    // このループの完了には時間がかかる
+    // DOM の応答が停止するのを防ぐため、定期的に処理を譲る
     await sleep(0);
   }
 };
