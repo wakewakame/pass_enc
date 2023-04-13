@@ -5,33 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pass_enc</title>
     <style>
-      h1 {
-        margin: 0;
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap');
+      @media print {
+        .form {
+          display: none;
+        }
+        .command {
+          break-after: page;
+        }
+        .account {
+          break-inside: avoid;
+        }
       }
-      pre {
+      * {
+        font-family: 'Noto Sans JP', sans-serif;
+      }
+      .cards {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: start;
+        width: 100%;
+        position: relative;
+        padding-bottom: 6mm;
+      }
+      .account {
+        width: 53.98mm;
+        height: 85.60mm;
+        top: 3mm;
+        padding: 4mm;
+        position: relative;
+        background: #fff;
+        box-sizing: border-box;
+      }
+      .account>.main {
+        overflow: hidden;
+      }
+      .account>.trim-marks>div {
+        position: absolute;
+        border-color: #000;
+        border-style: solid;
+        width: 2mm;
+        height: 2mm;
+        z-index: -1;
+      }
+      .account>.trim-marks>div:nth-child(1) { left : -2.0mm; top   : -3.0mm; border-width: 0 0.3mm 0 0; }
+      .account>.trim-marks>div:nth-child(2) { left : -3.0mm; top   : -2.0mm; border-width: 0 0 0.3mm 0; }
+      .account>.trim-marks>div:nth-child(3) { right: -2.0mm; top   : -3.0mm; border-width: 0 0 0 0.3mm; }
+      .account>.trim-marks>div:nth-child(4) { right: -3.0mm; top   : -2.0mm; border-width: 0 0 0.3mm 0; }
+      .account>.trim-marks>div:nth-child(5) { right: -2.0mm; bottom: -3.0mm; border-width: 0 0 0 0.3mm; }
+      .account>.trim-marks>div:nth-child(6) { right: -3.0mm; bottom: -2.0mm; border-width: 0.3mm 0 0 0; }
+      .account>.trim-marks>div:nth-child(7) { left : -2.0mm; bottom: -3.0mm; border-width: 0 0.3mm 0 0; }
+      .account>.trim-marks>div:nth-child(8) { left : -3.0mm; bottom: -2.0mm; border-width: 0.3mm 0 0 0; }
+      .qr {
+        width: 100%;
+        aspect-ratio: 1;
+        overflow: hidden;
+        background: #eee;
+      }
+      .service {
         margin: 0;
+        font-size: 6mm;
+        overflow-wrap: break-word;
       }
     </style>
   </head>
   <body>
-    <div>
+    <div class="form">
       <p>encrypted <input id="encrypted" type="password" value="U2FsdGVkX18SVuiyePC5fxY5f6b+Wight/nXfCdGAVon6z+v8LhjmqqIgTnZhzbHh+bImmegFcGa4LAxEZnqgrcgUTi4j01p4jaAJYNovcsDVNKGvlXF16xnBvhrkQlgUL+bfLyK9k9jDV/EgUNkEhXzfru77cngKrD21LOCZS/ygLV9izVt7VoTH2pYkXGqfA+KN1kEPFCa23GCzjHW9bmhQQz0isGpMSknJ+eNkjJ7Mk3+nEjYR5OM2P48OUr3jRnYk21vkhfiP2XIgH17Z7ZJB/JjoKmSGCcH979+Z+mADlD5LXROmqadBW4pkaFNcT8yttszlrDfOqTEumeyXcZmDPAOcpZ0vPIgSJgcbCn8UidcyDiBW7afjWcXaaaPHS7LOVGrzmj584hCdMmTGVvBcuHurLuNSraKcKgRv+GK/BVb8CaUzIC8cfTh92gGmPft7d+BMNLuHEChM1iLdw=="></p>
       <p>password <input id="password" type="password" value="pass"></p>
       <p>iterations <input id="iterations" type="number" value="10000"></p>
-      <button id="decrypt" onclick="decrypt()">decrypt</button>
+      <button id="decrypt">decrypt</button>
+    </div>
+    <div class="command">
+      <h1>how to encrypt</h1>
+      <pre>echo "${plaintext}" | openssl aes-256-cbc -e -pbkdf2 -iter ${iterations} -base64 -A</pre>
+      <h1>how to decrypt</h1>
+      <pre>echo "${encrypted}" | openssl aes-256-cbc -d -pbkdf2 -iter ${iterations} -base64 -A</pre>
     </div>
     <template id="account-template">
       <div class="account" data-account="">
-        <div class="qr" style="width: 256px; height: 256px; background: #eee">
-        </div>
-        <div>
+        <div class="main">
+          <div class="qr"></div>
           <p class="service"></p>
-          <p class="command"></p>
+        </div>
+        <div class="trim-marks">
+          <div></div><div></div>
+          <div></div><div></div>
+          <div></div><div></div>
+          <div></div><div></div>
         </div>
       </div>
     </template>
-    <div id="accounts">
-    </div>
+    <div id="accounts" class="cards"></div>
     <script type="module" src="/main.js"></script>
   </body>
 </html>

@@ -68,7 +68,7 @@ const openssl = {
 
 const sleep = (msec) => new Promise((resolve) => setTimeout(resolve, msec));
 
-window.decrypt = async () => {
+const showAccounts = async () => {
   // 入力された暗号文からアカウント一覧を復元
   const formValue = Object.fromEntries(["encrypted", "password", "iterations"]
     .map((elemId) => [elemId, document.getElementById(elemId).value])
@@ -89,8 +89,6 @@ window.decrypt = async () => {
     const accountElem = accountTemplateElem.content.cloneNode(true);
     accountElem.querySelector(".account").dataset.account = JSON.stringify(account);
     accountElem.querySelector(".service").textContent = account["service"];
-    accountElem.querySelector(".command").textContent =
-      `echo "\${base64}" | openssl aes-256-cbc -d -pbkdf2 -iter ${formValue["iterations"]} -base64 -A -k "\${password}"`
     accountsElem.appendChild(accountElem);
   });
 
@@ -105,3 +103,6 @@ window.decrypt = async () => {
     await sleep(0);
   }
 };
+
+showAccounts();
+document.getElementById("decrypt").addEventListener("click", showAccounts);
