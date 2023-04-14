@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="jp">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,8 +17,46 @@
           break-inside: avoid;
         }
       }
+      @media not print {
+        .command {
+          display: none;
+        }
+      }
       * {
         font-family: 'Noto Sans JP', sans-serif;
+      }
+      .form {
+        margin: auto;
+        margin-bottom: 5mm;
+        padding-bottom: 5mm;
+        width: 200mm;
+        text-align: left;
+        border-bottom: solid 0.3mm;
+      }
+      .form table {
+        width: 100%;
+      }
+      .form input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .form>button {
+        width: 100%;
+        height: 12mm;
+        border: 0;
+        font-size: 6mm;
+      }
+      .command {
+        margin: auto;
+        width: 200mm;
+        box-sizing: border-box;
+        break-after: page;
+        margin-bottom: 10mm;
+      }
+      .command pre {
+        border-radius: 2mm;
+        padding: 2mm;
+        background: #eee;
       }
       .cards {
         display: flex;
@@ -27,19 +65,15 @@
         justify-content: center;
         align-items: start;
         width: 100%;
-        position: relative;
-        padding-bottom: 6mm;
       }
       .account {
-        width: 53.98mm;
-        height: 85.60mm;
-        top: 3mm;
+        width: calc(53.98mm + 0.15mm);
+        height: calc(85.60mm + 0.15mm);
+        margin: -0.15mm;
         padding: 4mm;
         position: relative;
         background: #fff;
         box-sizing: border-box;
-      }
-      .account>.main {
         overflow: hidden;
       }
       .account>.trim-marks>div {
@@ -48,16 +82,11 @@
         border-style: solid;
         width: 2mm;
         height: 2mm;
-        z-index: -1;
       }
-      .account>.trim-marks>div:nth-child(1) { left : -2.0mm; top   : -3.0mm; border-width: 0 0.3mm 0 0; }
-      .account>.trim-marks>div:nth-child(2) { left : -3.0mm; top   : -2.0mm; border-width: 0 0 0.3mm 0; }
-      .account>.trim-marks>div:nth-child(3) { right: -2.0mm; top   : -3.0mm; border-width: 0 0 0 0.3mm; }
-      .account>.trim-marks>div:nth-child(4) { right: -3.0mm; top   : -2.0mm; border-width: 0 0 0.3mm 0; }
-      .account>.trim-marks>div:nth-child(5) { right: -2.0mm; bottom: -3.0mm; border-width: 0 0 0 0.3mm; }
-      .account>.trim-marks>div:nth-child(6) { right: -3.0mm; bottom: -2.0mm; border-width: 0.3mm 0 0 0; }
-      .account>.trim-marks>div:nth-child(7) { left : -2.0mm; bottom: -3.0mm; border-width: 0 0.3mm 0 0; }
-      .account>.trim-marks>div:nth-child(8) { left : -3.0mm; bottom: -2.0mm; border-width: 0.3mm 0 0 0; }
+      .account>.trim-marks>div:nth-child(1) { left : 0mm; top   : 0mm; border-width: 0.3mm 0 0 0.3mm; }
+      .account>.trim-marks>div:nth-child(2) { right: 0mm; top   : 0mm; border-width: 0.3mm 0.3mm 0 0; }
+      .account>.trim-marks>div:nth-child(3) { left:  0mm; bottom: 0mm; border-width: 0 0 0.3mm 0.3mm; }
+      .account>.trim-marks>div:nth-child(4) { right: 0mm; bottom: 0mm; border-width: 0 0.3mm 0.3mm 0; }
       .qr {
         width: 100%;
         aspect-ratio: 1;
@@ -73,28 +102,41 @@
   </head>
   <body>
     <div class="form">
-      <p>encrypted <input id="encrypted" type="password" value="U2FsdGVkX18SVuiyePC5fxY5f6b+Wight/nXfCdGAVon6z+v8LhjmqqIgTnZhzbHh+bImmegFcGa4LAxEZnqgrcgUTi4j01p4jaAJYNovcsDVNKGvlXF16xnBvhrkQlgUL+bfLyK9k9jDV/EgUNkEhXzfru77cngKrD21LOCZS/ygLV9izVt7VoTH2pYkXGqfA+KN1kEPFCa23GCzjHW9bmhQQz0isGpMSknJ+eNkjJ7Mk3+nEjYR5OM2P48OUr3jRnYk21vkhfiP2XIgH17Z7ZJB/JjoKmSGCcH979+Z+mADlD5LXROmqadBW4pkaFNcT8yttszlrDfOqTEumeyXcZmDPAOcpZ0vPIgSJgcbCn8UidcyDiBW7afjWcXaaaPHS7LOVGrzmj584hCdMmTGVvBcuHurLuNSraKcKgRv+GK/BVb8CaUzIC8cfTh92gGmPft7d+BMNLuHEChM1iLdw=="></p>
-      <p>password <input id="password" type="password" value="pass"></p>
-      <p>iterations <input id="iterations" type="number" value="10000"></p>
-      <button id="decrypt">decrypt</button>
+      <h1>pass_enc</h1>
+      <p>暗号化されたアカウント情報を印刷するためのツールです。</p>
+      <table>
+        <tbody>
+          <tr>
+            <th>encrypted</th>
+            <th><input id="encrypted" type="password" value="U2FsdGVkX18SVuiyePC5fxY5f6b+Wight/nXfCdGAVon6z+v8LhjmqqIgTnZhzbHh+bImmegFcGa4LAxEZnqgrcgUTi4j01p4jaAJYNovcsDVNKGvlXF16xnBvhrkQlgUL+bfLyK9k9jDV/EgUNkEhXzfru77cngKrD21LOCZS/ygLV9izVt7VoTH2pYkXGqfA+KN1kEPFCa23GCzjHW9bmhQQz0isGpMSknJ+eNkjJ7Mk3+nEjYR5OM2P48OUr3jRnYk21vkhfiP2XIgH17Z7ZJB/JjoKmSGCcH979+Z+mADlD5LXROmqadBW4pkaFNcT8yttszlrDfOqTEumeyXcZmDPAOcpZ0vPIgSJgcbCn8UidcyDiBW7afjWcXaaaPHS7LOVGrzmj584hCdMmTGVvBcuHurLuNSraKcKgRv+GK/BVb8CaUzIC8cfTh92gGmPft7d+BMNLuHEChM1iLdw=="></th>
+          </tr>
+          <tr>
+            <th>password</th>
+            <th><input id="password" type="password" value="pass"></th>
+          </tr>
+          <tr>
+            <th>iterations</th>
+            <th><input id="iterations" type="number" value="10000"></th>
+          </tr>
+        </tbody>
+      </table>
+      <button id="print">print</button>
     </div>
     <div class="command">
-      <h1>how to encrypt</h1>
+      <h1>暗号化</h1>
       <pre>echo "${plaintext}" | openssl aes-256-cbc -e -pbkdf2 -iter ${iterations} -base64 -A</pre>
-      <h1>how to decrypt</h1>
+      <h1>復号化</h1>
       <pre>echo "${encrypted}" | openssl aes-256-cbc -d -pbkdf2 -iter ${iterations} -base64 -A</pre>
     </div>
     <template id="account-template">
       <div class="account" data-account="">
-        <div class="main">
-          <div class="qr"></div>
-          <p class="service"></p>
-        </div>
+        <div class="qr"></div>
+        <p class="service"></p>
         <div class="trim-marks">
-          <div></div><div></div>
-          <div></div><div></div>
-          <div></div><div></div>
-          <div></div><div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
       </div>
     </template>

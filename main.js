@@ -104,5 +104,5 @@ const showAccounts = async () => {
   }
 };
 
-showAccounts();
-document.getElementById("decrypt").addEventListener("click", showAccounts);
+//showAccounts();
+document.getElementById("print").addEventListener("click", showAccounts);
