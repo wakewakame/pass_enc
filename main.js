@@ -1,5 +1,9 @@
+'use strict';
+
 import CryptoJS from "crypto-js";
+import * as kdbxweb from "kdbxweb";
 import QRCode from "qrcode";
+import argon2 from "./argon2";
 
 const openssl = {
   // 暗号化
@@ -68,14 +72,35 @@ const openssl = {
 
 const sleep = (msec) => new Promise((resolve) => setTimeout(resolve, msec));
 
+kdbxweb.CryptoEngine.setArgon2Impl(argon2);
+
 const showAccounts = async () => {
-  // 入力された暗号文からアカウント一覧を復元
-  const formValue = Object.fromEntries(["encrypted", "password", "iterations"]
-    .map((elemId) => [elemId, document.getElementById(elemId).value])
-  );
-  const decrypted = openssl.decrypt(formValue["encrypted"], formValue["password"], formValue["iterations"]);
-  const accounts_ = JSON.parse(decrypted);
-  const accounts = Array.isArray(accounts_) ? accounts_ : [accounts_];
+  // kdbx からアカウント一覧を復元
+  const kdbx = document.getElementById("kdbx").files[0];
+  const password = document.getElementById("password").value;
+  const accounts = await (new Promise((resolve, reject) => {
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const credentials = new kdbxweb.Credentials(kdbxweb.ProtectedValue.fromString(password));
+        const db = await kdbxweb.Kdbx.load(reader.result, credentials);
+        const parseGroup = (groups) => groups.map((group) => [
+          ...group.entries.map((entry) =>
+            Object.fromEntries([...entry.fields.entries()].map(([key, value]) => [
+              key, (value instanceof kdbxweb.ProtectedValue) ? value.getText() : value
+            ]))
+          ),
+          ...parseGroup(group.groups),
+        ]).reduce((a, b) => [...a, ...b], []);
+        const accounts = parseGroup(db.groups);
+        resolve(accounts);
+      };
+      reader.readAsArrayBuffer(kdbx);
+    }
+    catch (e) {
+      reject(e);
+    }
+  }));
 
   // アカウント一覧の表示をリセット
   const accountsElem = document.getElementById("accounts");
@@ -88,13 +113,13 @@ const showAccounts = async () => {
   accounts.forEach((account) => {
     const accountElem = accountTemplateElem.content.cloneNode(true);
     accountElem.querySelector(".account").dataset.account = JSON.stringify(account);
-    accountElem.querySelector(".service").textContent = account["service"];
+    accountElem.querySelector(".title").textContent = account["Title"];
     accountsElem.appendChild(accountElem);
   });
 
   // アカウント情報の暗号化 & QR Code のレンダリング
   for (const accountElem of document.querySelectorAll(".account")) {
-    const enc = openssl.encrypt(accountElem.dataset.account, formValue["password"], formValue["iterations"]);
+    const enc = openssl.encrypt(accountElem.dataset.account, password, 10000);
     const svg = await QRCode.toString(enc, { errorCorrectionLevel: "L", type: "svg", margin: 1 });
     accountElem.querySelector(".qr").innerHTML = svg;
 
@@ -106,3 +131,4 @@ const showAccounts = async () => {
 
 //showAccounts();
 document.getElementById("print").addEventListener("click", showAccounts);
+
