@@ -2,7 +2,7 @@
 
 [KeePass](https://keepass.info/) によって暗号化されたアカウント一覧を印刷するためのツールです。
 
-demo: [pass\_enc](https://wakewakame.github.io/pass_enc/index.html)
+demo: [pass\_enc](https://wakewakame.github.io/pass_enc/dist/index.html)
 
 # 使い方
 
