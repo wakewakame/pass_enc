@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pass_enc</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&display=swap');
+      @media print {
+        .form {
+          display: none;
+        }
+        .command {
+          break-after: page;
+        }
+        .account {
+          break-inside: avoid;
+        }
+      }
+      @media not print {
+        .command {
+          display: none;
+        }
+      }
+      * {
+        font-family: 'Noto Sans JP', sans-serif;
+      }
+      .form {
+        margin: auto;
+        margin-bottom: 5mm;
+        padding-bottom: 5mm;
+        width: 200mm;
+        text-align: left;
+        border-bottom: solid 0.3mm;
+      }
+      .form table {
+        width: 100%;
+      }
+      .form input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .form>button {
+        width: 100%;
+        height: 12mm;
+        border: 0;
+        font-size: 6mm;
+      }
+      .command {
+        margin: auto;
+        width: 200mm;
+        box-sizing: border-box;
+        break-after: page;
+        margin-bottom: 10mm;
+      }
+      .command pre {
+        border-radius: 2mm;
+        padding: 2mm;
+        background: #eee;
+      }
+      .cards {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: start;
+        width: 100%;
+      }
+      .account {
+        width: calc(53.98mm + 0.15mm);
+        height: calc(85.60mm + 0.15mm);
+        margin: -0.15mm;
+        padding: 4mm;
+        position: relative;
+        background: #fff;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+      .account>.trim-marks>div {
+        position: absolute;
+        border-color: #000;
+        border-style: solid;
+        width: 2mm;
+        height: 2mm;
+      }
+      .account>.trim-marks>div:nth-child(1) { left : 0mm; top   : 0mm; border-width: 0.3mm 0 0 0.3mm; }
+      .account>.trim-marks>div:nth-child(2) { right: 0mm; top   : 0mm; border-width: 0.3mm 0.3mm 0 0; }
+      .account>.trim-marks>div:nth-child(3) { left:  0mm; bottom: 0mm; border-width: 0 0 0.3mm 0.3mm; }
+      .account>.trim-marks>div:nth-child(4) { right: 0mm; bottom: 0mm; border-width: 0 0.3mm 0.3mm 0; }
+      .qr {
+        width: 100%;
+        aspect-ratio: 1;
+        overflow: hidden;
+        background: #eee;
+      }
+      .title {
+        margin: 0;
+        font-size: 6mm;
+        overflow-wrap: break-word;
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-c727c480.js"></script>
+  </head>
+  <body>
+    <div class="form">
+      <h1>pass_enc</h1>
+      <p>暗号化されたアカウント情報を印刷するためのツールです。</p>
+      <table>
+        <tbody>
+          <tr>
+            <th>kdbx4 file</th>
+            <th><input id="kdbx" type="file"></th>
+          </tr>
+          <tr>
+            <th>password</th>
+            <th><input id="password" type="password" value=""></th>
+          </tr>
+        </tbody>
+      </table>
+      <button id="print">print</button>
+    </div>
+    <div class="command">
+      <h1>暗号化</h1>
+      <pre>echo "${plaintext}" | openssl aes-256-cbc -e -pbkdf2 -iter 10000 -base64 -A</pre>
+      <h1>復号化</h1>
+      <pre>echo "${encrypted}" | openssl aes-256-cbc -d -pbkdf2 -iter 10000 -base64 -A</pre>
+    </div>
+    <template id="account-template">
+      <div class="account" data-account="">
+        <div class="qr"></div>
+        <p class="title"></p>
+        <div class="trim-marks">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </template>
+    <div id="accounts" class="cards"></div>
+    
+  </body>
+</html>
