@@ -2,6 +2,8 @@
 
 [KeePass](https://keepass.info/) によって暗号化されたアカウント一覧を印刷するためのツールです。
 
+demo: [pass\_enc](https://wakewakame.github.io/pass_enc/index.html)
+
 # 使い方
 
 `kdbx4 file` / `password` にそれぞれ KeePass のデータベース / パスワードを入力し `print` ボタンを押すと数十秒後にアカウント一覧が表示されます。
